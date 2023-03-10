@@ -31,11 +31,6 @@ public class MoteScript : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        //Player stuff
-        if(IsPlayer){
-            Player();
-        }
-        
         //Out Of Bounds
         OutOfBounds();
 
@@ -48,11 +43,17 @@ public class MoteScript : MonoBehaviour {
     }
     void Update() {
         transform.localScale = new Vector3(moteSize * 0.01f, moteSize * 0.01f, 1f); // Calculates the size of the sprite based on the variable moteSize
+        
+        // I put the player stuff under Update instead of Update because when it was under FixedUpdate, it would spawn a new mote every frame that the mouse was pressed down because its state gets refreshed every frame and thought it was getting pressed each frame instead of held from when it was initally pressed
+        if(IsPlayer){
+            Player();
         }
+    }
+        
 
     void Player() {
         if(moteSize > (1.5f * moteSpawnSize)) { // Makes sure that the player mote can't get too small
-            if (Input.GetMouseButtonDown(0)) { // Check if the left mouse button is clicked
+            if (Input.GetMouseButtonDown(0)) { // Check if the left mouse button is pressed down --> https://docs.unity3d.com/ScriptReference/Input.GetMouseButtonDown.html
                 
                 // Rotates the player mote such that its x axis is always facing the mouse
                 Vector3 mousePos = Input.mousePosition;
@@ -140,8 +141,8 @@ public class MoteScript : MonoBehaviour {
             // for now, we can enjoy the following placeholder
             Debug.Log("two motes with the same size have collided and I haven't decided what to do with that yet");
 
-            // if you're not ecstatic with that placeholder then here's what destroying them both would look like:
-            // if (otherMote.moteSize == moteSize) {Destroy(otherMote.gameObject); Destroy(gameObject);}
+            // if you're not happy with that placeholder then here's what destroying them both would look like:
+            // "if (otherMote.moteSize == moteSize) {Destroy(otherMote.gameObject); Destroy(gameObject);}"
         }
     }
     // Gets the size of the other mote and calls in Absorb() when two motes collide
