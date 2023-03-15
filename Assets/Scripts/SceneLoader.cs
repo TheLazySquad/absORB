@@ -8,5 +8,3 @@ public class SceneLoader : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 }
-
-// taken from https://blog.insane.engineer/post/unity_button_load_scene/

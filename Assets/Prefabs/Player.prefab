@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 5786822163532499814}
   - component: {fileID: 1224394083122989594}
   - component: {fileID: 5519883033206829581}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -55,7 +55,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a9f7a6e75cfa6bf4bbac2b344293b28c, type: 2}
+  - {fileID: 2100000, guid: 5367983b5c7db0c4bb1c1184c8a1fa8a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -116,8 +116,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
   m_Mass: 0.03313529
-  m_LinearDrag: 0.1
-  m_AngularDrag: 0.05
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 1
@@ -138,13 +138,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsPlayer: 1
   rb: {fileID: 1224394083122989594}
+  moteSize: 4
+  GConstant: 0.05
   OOBDrag: 1
   OOBForce: 0.1
-  GConstant: 0.05
-  moteSize: 4
   motePrefab: {fileID: 7541913504143773922, guid: fb1309dac42a3a6438e43a999a93e1b6, type: 3}
-  moteSpawnDistance: 0.5
-  moteSpawnSize: 0.5
+  moteSpawnDistance: 0.15
+  moteSpawnSize: 0.3
   moteSpawnForce: 0.01
-  playerRotationSpeed: 5
   playerLaunchForce: 1
+  PlayerTooSmallUI: {fileID: 0}
+  pauseMenu: {fileID: 0}
+  Paused: 0
+  gameSpeedTime: 1
+  bluemat: {fileID: 2100000, guid: 8944c5eb43572f94f9dcb349de6a4176, type: 2}
+  redmat: {fileID: 2100000, guid: efa0797931c7e4f4286880851266889e, type: 2}
+  playerMote: {fileID: 2273576453452890091}
+  playerMoteSize: 0
