@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5786822163532499814}
   - component: {fileID: 1224394083122989594}
   - component: {fileID: 5519883033206829581}
+  - component: {fileID: 4671053300121045494}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -155,3 +156,21 @@ MonoBehaviour:
   redmat: {fileID: 2100000, guid: efa0797931c7e4f4286880851266889e, type: 2}
   playerMote: {fileID: 2273576453452890091}
   playerMoteSize: 0
+--- !u!114 &4671053300121045494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2273576453452890091}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06dc40b6cc64ace40966df4868efa4c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialText1: {fileID: 0}
+  tutorialText2: {fileID: 0}
+  tutorialText3: {fileID: 0}
+  tutorialText4: {fileID: 0}
+  tutorialText5: {fileID: 0}
+  tutorialText6: {fileID: 0}

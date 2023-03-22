@@ -131,6 +131,10 @@ public class MoteScript : MonoBehaviour {
         else {
             PlayerTooSmall();
         }
+        if (this.gameObject.GetComponent<TutorialScript>().isActiveAndEnabled == true) {
+            Debug.Log("tutorial enabled in Motescript");
+            
+        }
     }
     void MenuOpened() {
         pauseMenu.SetActive(true);
