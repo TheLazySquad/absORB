@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 
 public class MoteScript : MonoBehaviour {
     // Universal mote variables
@@ -10,38 +11,59 @@ public class MoteScript : MonoBehaviour {
     Renderer rend;
     public static List<MoteScript> Motes;
     public float moteSize = 1.5f; // The size of the mote, used to calculate the actual size of the mote when the game starts
-    public float GConstant = 0.05f; // The gravitational constant for the attraction between all motes
+    private bool enableGravity = true;
+    private float GConstant = 0.0005f; // The gravitational constant for the attraction between all motes
 
     // Variables for OutOfBounds()
-    public float OOBDrag = 1f; // The value of the drag force applied by the rigidbody when the mote is outside the set boundaries defined below
-    public float OOBForce = 0.1f; // The amount of force applied to the rigidbody when the mote is outside the set boundaries defined below
+    private float OOBDrag = 0.01f; // The value of the drag force applied by the rigidbody when the mote is outside the set boundaries defined below
+    private float OOBForce = 0.1f; // The amount of force applied to the rigidbody when the mote is outside the set boundaries defined below
     private float xBoundary = 20; private float yBoundary = 20; // The coordinates used in OutOfBounds()
     
     // Player mote specific variables
+    public GameObject vcam;
     public GameObject motePrefab; // Reference to the mote prefab
-    public float moteSpawnDistance = 3.0f; // The distance to spawn the cloned mote away from the player mote
-    public float moteSpawnSize = 0.1f; // The size to set the cloned mote to
-    public float moteSpawnForce = 0.1f; // The amount of force to apply to the cloned mote
-    public float playerLaunchForce = 0.05f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
+    private float moteSpawnDistance = 0.15f; // The distance to spawn the cloned mote away from the player mote
+    private float moteSpawnSize = 0.2f; // The size to set the cloned mote to
+    private float moteSpawnForce = 0.02f; // The amount of force to apply to the cloned mote
+    private float playerLaunchForce = 0.5f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
     
     // Pause Menu and Time
     public GameObject PlayerTooSmallUI;
     public GameObject pauseMenu;
-    public bool Paused = false;
-    public float gameSpeedTime = 1f;
+    private bool Paused = false;
+    private float gameSpeedTime = 1f;
+    private float prevMousePosY;
+    private bool dragging;
 
     // Variables for Color()
     public Material bluemat; // Blue material used to designate motes that the player can absorb
     public Material redmat; // Red material used to designate motes that the player cannot absorb
     public GameObject playerMote; // gets the player mote for Color()
-    public float playerMoteSize; // the variable for the size of the player gameobject for Color()
+    private float playerMoteSize; // the variable for the size of the player gameobject for Color()
+
+    // Variables for CinemachineZoom()
+    public float sizeChangeAmount; // The amount to change the camera's size by
+    public float zoomSpeed; // The speed at which to zoom in/out
+    private CinemachineVirtualCamera virtualCamera; // The virtual camera to zoom
+    private float targetSize; // The target size of the camera
 
     void OnEnable() {
         if (Motes == null)
             Motes = new List<MoteScript>(); // Create the list if it hasn't been created already.
         Motes.Add(this); // Add all motes to the list when this line is run on each mote
-        
         rend = GetComponent<Renderer>(); // get the renderer component for Color()
+        
+        if (IsPlayer) { // if we don't check for a player, every time a new mote is spawned, the camera resets itself and gives you virtual wiplash
+            // Check for the virtual camera so we can zoom in/out with it in CinemachineZoom()
+            virtualCamera = GameObject.FindGameObjectWithTag("vcam").GetComponent<CinemachineVirtualCamera>();
+            if(virtualCamera == null) {
+                Debug.LogError("Where's the virtual camera? I can't find it! Check the tag");
+                enabled = false; return;
+            } else {
+                virtualCamera.m_Lens.OrthographicSize = 5; // The size of the orthographic camera. 5 seems to be a reasonable default
+                targetSize = virtualCamera.m_Lens.OrthographicSize; 
+            }
+        }
     }
 
     void OnDisable() {
@@ -55,12 +77,13 @@ public class MoteScript : MonoBehaviour {
         OutOfBounds();
 
         //Gravity
-        foreach (MoteScript attractor in Motes) {
-            if (attractor != this) {
-                Gravity(attractor);
+        if (enableGravity) {
+            foreach (MoteScript attractor in Motes) {
+                if (attractor != this) {
+                    Gravity(attractor);
+                }
             }
         }
-
     }
     void Update() {
         transform.localScale = new Vector3(moteSize * 0.01f, moteSize * 0.01f, 1f); // Calculates the size of the sprite based on the variable moteSize
@@ -70,24 +93,53 @@ public class MoteScript : MonoBehaviour {
         // I put the player stuff under Update instead of Update because when it was under FixedUpdate, it would spawn a new mote every frame that the mouse was pressed down because its state gets refreshed every frame and thought it was getting pressed each frame instead of held from when it was initally pressed
         if(IsPlayer){
             Player();
+            CinemachineZoom(); // its all the way down at the bottom of the script. have fun scrolling :)
         }
 
         // Change the color based on player size
         if (IsPlayer == false) {
             Color();
+            TimeScaler();
         }
     }
+     void TimeScaler() { // if the mouse button is pressed down then tell the function to change the time scale as if the player were dragging a slider up or down
+        if (Input.GetMouseButtonDown(1)) { // checks to see if the mouse button is down
+            dragging = true; // set the bool to true
+            prevMousePosY = Input.mousePosition.y; // set the variable for the y coordinate of the mouse in the previous frame
+        }
+        else if (Input.GetMouseButtonUp(1)) {dragging = false;} // if the mouse button is released then its no longer dragging the time scale up or down
+        if (dragging){
+            float currentMousePositionY = Input.mousePosition.y; // set the y position variable to the current y position of the mouse
+            if (currentMousePositionY > prevMousePosY) { // if the current y position is greater than the one from the previous frame
+                if (Time.timeScale < 20f) { // clamp the time scale at a maximum of 10
+                    Time.timeScale += 0.1f; // increase the time scale by .1 every frame
+                } else {Time.timeScale = 20f;} // if the time scale is greater than 10, set it back to 10 so that it can't be too high
+            }
+            else if (currentMousePositionY < prevMousePosY) { // if the current y position is less than the one from the previous frame
+                if (Time.timeScale > 0.5f) { // clamp the time scale at a minimum of 0.5
+                    Time.timeScale -= 0.1f; // decrease the time scale by .1 every frame
+                } else {Time.timeScale = 0.5f;} // if the time scale is less than 0.5 then set it back to 0.5 so that it can't get too small
+            }
+            // Debug.Log(Time.timeScale);
+            prevMousePosY = currentMousePositionY; // set the previous mouse position to the current mouse position so that the function will function properly next frame
+            
+            /*
+            reference for Time.timeScale : https://docs.unity3d.com/ScriptReference/Time-timeScale.html
+            time refers to the time at the beginnning of the frame and timeScale refers to how fast time passes, so when you put those two together you get the scale for how fast time passes in the scene
+            so a Time.timeScale of 1 means the game is moving at its original speed while a Time.timeScale of 1.5 means that time is moving 1.5 times faster than usual
+            */
+        }
+     }   
         
     void PlayerTooSmall() {
-        Debug.Log("player is too small"); // Outputs the message to the console when the player is too small to shoot out more mass to move itself around. this was originaly just a placeholder, but I think it's kind of useful to see so I can tell if the mote spawner is working or not
+        // Debug.Log("player is too small");
         playerMote.SetActive(false);
         PlayerTooSmallUI.SetActive(true);
-        Debug.Log("Ui enabled");
+        // Debug.Log("Ui enabled");
     }
     void Player() {
         if(moteSize > (1.5f * moteSpawnSize)) { // Makes sure that the player mote can't get too small
             if (Input.GetKeyDown(KeyCode.Escape)) { // Check if the escape key is pressed
-                Debug.Log("ESC pressed"); // log statment
                 if (Paused) {
                     MenuClosed(); // run code specific to when the menu is open
                 }
@@ -132,13 +184,14 @@ public class MoteScript : MonoBehaviour {
             PlayerTooSmall();
         }
         if (this.gameObject.GetComponent<TutorialScript>().isActiveAndEnabled == true) {
-            Debug.Log("tutorial enabled in Motescript");
+            // Debug.Log("MoteScript sees tutorial script");
             
         }
+        // if Input.GetMouseButton()
     }
     void MenuOpened() {
         pauseMenu.SetActive(true);
-        Time.timeScale = 0f; // source: https://docs.unity3d.com/ScriptReference/Time-timeScale.html
+        Time.timeScale = 0f; 
         Paused = true;
         }
     public void MenuClosed() {
@@ -215,17 +268,27 @@ public class MoteScript : MonoBehaviour {
             // Compare the size of the mote and the player, then change colors accordingly
             if (moteSize >= playerMoteSize)
             {
-                // rend.material.Lerp(bluemat, redmat, Time.time);
-                rend.material = redmat;
+                rend.material.Lerp(bluemat, redmat, 10f);
+                // rend.material = redmat;
             }
             else if (moteSize < playerMoteSize)
             {
-                // rend.material.Lerp(redmat, bluemat, Time.time);
-                rend.material = bluemat;
-            }    
+                rend.material.Lerp(redmat, bluemat, 10f);
+                // rend.material = bluemat;
+            }
+            // note that using Lerp causes everything to break and die, so don't un-comment those unless you wanna try and fix them somehow 
         }
         else {
             rend.material = redmat;
         }
+    }
+    void CinemachineZoom() {
+        Vector2 scrollDelta = Input.mouseScrollDelta; // make it a variable for ease of access
+        if (scrollDelta.y != 0) { // its you're scrolling
+            targetSize -= sizeChangeAmount * scrollDelta.y; // change the size variable based on the scroll delta vector
+            targetSize = Mathf.Clamp(targetSize, 0.5f, 45f); // Clamp the target size to a reasonable range
+        }
+        virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(virtualCamera.m_Lens.OrthographicSize, targetSize, zoomSpeed * Time.deltaTime); // finally lerp the size of the virtual camera (the one controlling the main camera) based on the target size and the zoom speed
+        // this was a very difficult solution to find, but it was crucial that the camera wasn't super jumpy, so here's where i found how to change the Cinemachine's virtual camera size: https://docs.unity3d.com/Packages/com.unity.cinemachine@2.3/api/Cinemachine.LensSettings.html#:~:text=System.Single-,OrthographicSize,-When%20using%20an. it really would have been nice to know that is was so simple to begin with.
     }
 }

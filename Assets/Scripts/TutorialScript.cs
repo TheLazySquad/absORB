@@ -1,41 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;    
+using Cinemachine;
+using Cinemachine.Utility;
 
 public class TutorialScript : MonoBehaviour {
-    Color lerpedColor = Color.white;
+    public GameObject vcam;
+    float scale;
     public bool timebardisabled = true;
     public bool titleDisabled = false;
     public GameObject titleText;
-    public GameObject clickToMove;
-    public GameObject tutorialText3;
-    public GameObject tutorialText4;
-    public GameObject tutorialText5;
-    public GameObject tutorialText6;
+    public GameObject clickToStart;
 
     void Start() {
-        Debug.Log("Tutorial Enabled");
-        StartCoroutine(DisableTimebar());
-        TutorialEnabled();
-    }
-    void Update() {
-        if (Input.GetMouseButton(0)) {
-            if (!titleDisabled) {   
-                titleText.SetActive(false);
-                clickToMove.SetActive(false);
-            }
-        }
-    }
-    void DisableTitleText() {
+        scale = 1f;
+        vcam.SetActive(false);
 
     }
-    IEnumerator DisableTimebar() {
-        yield return new WaitForSeconds(1);
-        // TimeBar.SetActive(false);
-        Debug.Log("Timebar Disabled");
+    void Update() {
+        Debug.Log(scale);
+        if (Input.GetMouseButton(0)) {
+            titleDisabled = true;
+        }
+        if (titleDisabled) {
+            DisableUIText(titleText);
+            DisableUIText(clickToStart);
+            // vcam.SetActive(true);
+        }
     }
-    void TutorialEnabled(){
-        Debug.Log("tutorial enabled from tutorialscript");
+    void DisableUIText(GameObject gObj) {
+        Debug.Log(gObj.name + "Should be shrinking");
+        if (scale > 0.1) {
+            scale -= 0.1f;
+            gObj.transform.localScale = new Vector3(scale, scale, scale);
+        } else if (scale <= 0.1) { gObj.SetActive(false); }
         
     }
 }

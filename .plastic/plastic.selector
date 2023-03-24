@@ -1,4 +1,4 @@
-repository "absORB@TheAceTwo@cloud"
+repository "absORB@TheLazySquad@cloud"
   path "/"
     br "/main"
     co "/main"
