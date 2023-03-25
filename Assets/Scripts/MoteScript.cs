@@ -25,7 +25,7 @@ public class MoteScript : MonoBehaviour {
     private float moteSpawnDistance = 0.15f; // The distance to spawn the cloned mote away from the player mote
     private float moteSpawnSize = 0.2f; // The size to set the cloned mote to
     private float moteSpawnForce = 0.02f; // The amount of force to apply to the cloned mote
-    private float playerLaunchForce = 0.5f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
+    private float playerLaunchForce = 1f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
     
     // Pause Menu and Time
     public GameObject PlayerTooSmallUI;
@@ -42,8 +42,8 @@ public class MoteScript : MonoBehaviour {
     private float playerMoteSize; // the variable for the size of the player gameobject for Color()
 
     // Variables for CinemachineZoom()
-    public float sizeChangeAmount; // The amount to change the camera's size by
-    public float zoomSpeed; // The speed at which to zoom in/out
+    private float sizeChangeAmount = 1f; // The amount to change the camera's size by
+    private float zoomSpeed = 2f; // The speed at which to zoom in/out
     private CinemachineVirtualCamera virtualCamera; // The virtual camera to zoom
     private float targetSize; // The target size of the camera
 
