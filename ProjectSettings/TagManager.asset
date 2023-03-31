@@ -6,6 +6,7 @@ TagManager:
   tags:
   - absorbable
   - vcam
+  - PauseMenu
   layers:
   - Default
   - TransparentFX
@@ -40,6 +41,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: motes
+    uniqueID: 1858395271
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: canvas
+    uniqueID: 3889334045
     locked: 0

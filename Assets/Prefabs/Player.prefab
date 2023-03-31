@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5786822163532499814}
   - component: {fileID: 1224394083122989594}
   - component: {fileID: 5519883033206829581}
+  - component: {fileID: -4329993657361601436}
   - component: {fileID: 4671053300121045494}
   m_Layer: 3
   m_Name: Player
@@ -74,8 +75,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1858395271
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 93c38bbdecac7874e86b7f39006b99f3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -140,22 +141,27 @@ MonoBehaviour:
   IsPlayer: 1
   rb: {fileID: 1224394083122989594}
   moteSize: 4
-  GConstant: 0.05
-  OOBDrag: 1
-  OOBForce: 0.1
   motePrefab: {fileID: 7541913504143773922, guid: fb1309dac42a3a6438e43a999a93e1b6, type: 3}
-  moteSpawnDistance: 0.15
-  moteSpawnSize: 0.3
-  moteSpawnForce: 0.01
-  playerLaunchForce: 1
-  PlayerTooSmallUI: {fileID: 0}
-  pauseMenu: {fileID: 0}
-  Paused: 0
-  gameSpeedTime: 1
   bluemat: {fileID: 2100000, guid: 8944c5eb43572f94f9dcb349de6a4176, type: 2}
   redmat: {fileID: 2100000, guid: efa0797931c7e4f4286880851266889e, type: 2}
   playerMote: {fileID: 2273576453452890091}
-  playerMoteSize: 0
+  Canvas: {fileID: 0}
+  pauseMenu: {fileID: 6711391134909533035, guid: e7e4cec7181162842bd85b03cf6d549d, type: 3}
+  PlayerTooSmallUI: {fileID: 6010503713707268730, guid: 9ee85ca094035ca4e893323e52504a3a, type: 3}
+  PlayerAbsorbedUI: {fileID: 2753225063311856875, guid: d87be161972b7bc4fae62a9352c6c879, type: 3}
+  LvlCompleteUI: {fileID: 2753225063311856875, guid: 5f94fb708669b5d4b99ba962b8f6f9e4, type: 3}
+--- !u!114 &-4329993657361601436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2273576453452890091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9baeb694f9b6614191a7aa5672b1fee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4671053300121045494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,9 +174,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06dc40b6cc64ace40966df4868efa4c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tutorialText1: {fileID: 0}
-  tutorialText2: {fileID: 0}
-  tutorialText3: {fileID: 0}
-  tutorialText4: {fileID: 0}
-  tutorialText5: {fileID: 0}
-  tutorialText6: {fileID: 0}
+  vcam: {fileID: 0}
+  timebardisabled: 1
+  titleDisabled: 0
+  titleText: {fileID: 0}
+  clickToStart: {fileID: 0}

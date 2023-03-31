@@ -73,8 +73,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1858395271
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 93c38bbdecac7874e86b7f39006b99f3, type: 3}
   m_Color: {r: 0, g: 0.06983614, b: 1, a: 1}
@@ -138,17 +138,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsPlayer: 0
   rb: {fileID: 7483562067322250515}
-  moteSize: 1
-  GConstant: 0.001
-  OOBDrag: 0.1
-  OOBForce: 0.1
+  moteSize: 2
   motePrefab: {fileID: 7541913504143773922}
-  moteSpawnDistance: 0.01
-  moteSpawnSize: 0.1
-  moteSpawnForce: 0.1
-  playerLaunchForce: 0.05
-  PlayerTooSmallUI: {fileID: 7269446410663347013, guid: 9ee85ca094035ca4e893323e52504a3a, type: 3}
   bluemat: {fileID: 2100000, guid: 8944c5eb43572f94f9dcb349de6a4176, type: 2}
   redmat: {fileID: 2100000, guid: efa0797931c7e4f4286880851266889e, type: 2}
   playerMote: {fileID: 2273576453452890091, guid: 27a4fd87f24504b489a9822967c5bfb4, type: 3}
-  playerMoteSize: 0
+  Canvas: {fileID: 0}
+  pauseMenu: {fileID: 6711391134909533035, guid: e7e4cec7181162842bd85b03cf6d549d, type: 3}
+  PlayerTooSmallUI: {fileID: 6010503713707268730, guid: 9ee85ca094035ca4e893323e52504a3a, type: 3}
+  PlayerAbsorbedUI: {fileID: 2753225063311856875, guid: d87be161972b7bc4fae62a9352c6c879, type: 3}
