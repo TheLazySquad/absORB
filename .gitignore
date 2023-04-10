@@ -73,3 +73,8 @@ crashlytics-build.properties
 
 # Text Mesh Pro Shaders
 [Aa]ssets/TextMeshPro/Shaders/
+
+# Plastic 
+.plastic/*
+plastic.wktree
+plastic.changes
