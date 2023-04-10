@@ -704,6 +704,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2273576453452890091, guid: 27a4fd87f24504b489a9822967c5bfb4, type: 3}
+      propertyPath: m_TagString
+      value: absorbable
+      objectReference: {fileID: 0}
     - target: {fileID: 5519883033206829581, guid: 27a4fd87f24504b489a9822967c5bfb4, type: 3}
       propertyPath: Canvas
       value: 
@@ -728,6 +732,7 @@ GameObject:
   - component: {fileID: 1052307213}
   - component: {fileID: 1052307212}
   - component: {fileID: 1052307216}
+  - component: {fileID: 1052307217}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -828,6 +833,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 612ab79c0381e674c86fba212bd44ee2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1052307217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052307211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55cf08b40fb4cfd438be7653af91aad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lvl0: 0
 --- !u!1 &1243548137
 GameObject:
   m_ObjectHideFlags: 0

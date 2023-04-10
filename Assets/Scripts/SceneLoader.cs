@@ -9,9 +9,13 @@ public class SceneLoader : MonoBehaviour {
         SceneManager.LoadScene(sceneName);
     }
     public void NextLevel() {
-        Scene currentLvl = SceneManager.GetActiveScene();
-        if (currentLvl.name == "R1") {
-            LoadScene("R2");
+        int currentLevelInt = int.Parse(SceneManager.GetActiveScene().name); // change the string into an integer
+        int newLevelInt = currentLevelInt + 1; // add 1 to the current level integer
+        if (newLevelInt == 13 || newLevelInt == 25){
+            LoadScene("MainMenu");
+        } else {
+            string newLevelStr = System.Convert.ToString(newLevelInt);
+            LoadScene(newLevelStr);
         }
     }
 }

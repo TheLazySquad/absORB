@@ -70,11 +70,7 @@ public class MoteScript : MonoBehaviour {
         if (IsPlayer) { // if we don't check for a player, every time a new mote is spawned, the camera resets itself and gives you virtual wiplash
             // Check for the virtual camera so we can zoom in/out with it in CinemachineZoom()
             virtualCamera = GameObject.FindGameObjectWithTag("vcam").GetComponent<CinemachineVirtualCamera>(); // get the virtual camera component
-            if(virtualCamera == null) { // check for null
-                Debug.LogError("Where's the virtual camera? I can't find it! Check the tag");
-                enabled = false; 
-                return;
-            } else { // if the camera isn't null
+            if(virtualCamera != null) { // if the camera isn't null
                 virtualCamera.m_Lens.OrthographicSize = 5; // The size of the orthographic camera. 5 seems to be a reasonable default
                 targetSize = virtualCamera.m_Lens.OrthographicSize; 
             }
@@ -127,8 +123,7 @@ public class MoteScript : MonoBehaviour {
         }
         // TrueForAll: https://stackoverflow.com/questions/17897728/how-to-use-trueforall#:~:text=bool%20alltrue%20%3D%20listOfBools.TrueForAll(b%20%3D%3E%20b)%3B
     } 
-    void LvlComplete() {
-        Debug.Log("lvlcomplete");
+    public void LvlComplete() {
         Time.timeScale = 1;
         allowTimeScaler = false;
         allowMenus = false;
@@ -136,6 +131,7 @@ public class MoteScript : MonoBehaviour {
             uiSpawned = true;
             Instantiate(LvlCompleteUI, Canvas.transform.position, Quaternion.identity, Canvas.transform);
         }
+        SaveLevel();
     }
     void Player() {
         if(moteSize > (1.5f * moteSpawnSize)) { // Makes sure that the player mote can't get too small
@@ -170,7 +166,7 @@ public class MoteScript : MonoBehaviour {
                     moteRigidbody.AddForce(forceDirection * moteSpawnForce, ForceMode2D.Impulse); // Add force to the rigidbody in the direction determined by forceDirection
 
                     // Apply force to the player mote's rigidbody and decrease the size of the player mote
-                    rb.AddForce((-forceDirection * playerLaunchForce), ForceMode2D.Force);
+                    rb.AddForce((-forceDirection * (playerLaunchForce * moteSize)), ForceMode2D.Force);
                     moteSize -= moteSpawnSize;
 
                     // References for ForceMode2D: https://docs.unity3d.com/ScriptReference/ForceMode2D.html
@@ -309,6 +305,34 @@ public class MoteScript : MonoBehaviour {
                 */
             }
         }
+    }
+    void SaveLevel() {
+        int currentLevelInt = int.Parse(SceneManager.GetActiveScene().name); // turn the string into an int so we can use it in the next line
+
+        if (currentLevelInt == 1) {LevelSaver.lvl1 = true;}
+        if (currentLevelInt == 2) {LevelSaver.lvl2 = true;}
+        if (currentLevelInt == 3) {LevelSaver.lvl3 = true;}
+        if (currentLevelInt == 4) {LevelSaver.lvl4 = true;}
+        if (currentLevelInt == 5) {LevelSaver.lvl5 = true;}
+        if (currentLevelInt == 6) {LevelSaver.lvl6 = true;}
+        if (currentLevelInt == 7) {LevelSaver.lvl7 = true;}
+        if (currentLevelInt == 8) {LevelSaver.lvl8 = true;}
+        if (currentLevelInt == 9) {LevelSaver.lvl9 = true;}
+        if (currentLevelInt == 10) {LevelSaver.lvl10 = true;}
+        if (currentLevelInt == 11) {LevelSaver.lvl11 = true;}
+        if (currentLevelInt == 12) {LevelSaver.lvl12 = true;}
+        if (currentLevelInt == 13) {LevelSaver.lvl13 = true;}
+        if (currentLevelInt == 14) {LevelSaver.lvl14 = true;}
+        if (currentLevelInt == 15) {LevelSaver.lvl15 = true;}
+        if (currentLevelInt == 16) {LevelSaver.lvl16 = true;}
+        if (currentLevelInt == 17) {LevelSaver.lvl17 = true;}
+        if (currentLevelInt == 18) {LevelSaver.lvl18 = true;}
+        if (currentLevelInt == 19) {LevelSaver.lvl19 = true;}
+        if (currentLevelInt == 20) {LevelSaver.lvl20 = true;}
+        if (currentLevelInt == 21) {LevelSaver.lvl21 = true;}
+        if (currentLevelInt == 22) {LevelSaver.lvl22 = true;}
+        if (currentLevelInt == 23) {LevelSaver.lvl23 = true;}
+        if (currentLevelInt == 24) {LevelSaver.lvl24 = true;}
     }
     void CinemachineZoom() {
         if (!Paused && allowZoom) {
