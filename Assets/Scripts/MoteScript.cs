@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Cinemachine;
+using System.Collections;
 
 public class MoteScript : MonoBehaviour {
     Renderer rend;
@@ -27,7 +28,7 @@ public class MoteScript : MonoBehaviour {
     private float moteSpawnDistance = 0.15f; // The distance to spawn the cloned mote away from the player mote
     private float moteSpawnSize = 0.2f; // The size to set the cloned mote to
     private float moteSpawnForce = 0.02f; // The amount of force to apply to the cloned mote
-    private float playerLaunchForce = 1f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
+    private float playerLaunchForce = 1.2f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
     
     // Pause and Time
     private bool Paused = false;
@@ -51,9 +52,8 @@ public class MoteScript : MonoBehaviour {
 
     //Variables for winning/losing
     private bool biggerThanPlayer = false;
-    private bool playerIsBiggest = false;
-    private float biggestMoteSize; // The biggest mote size;
-    
+    private bool enableBiggestFinder;
+
     // Variables for UI
     public GameObject Canvas;
     private bool allowMenus = true;
@@ -63,9 +63,11 @@ public class MoteScript : MonoBehaviour {
     public GameObject PlayerAbsorbedUI;
     public GameObject LvlCompleteUI;
 
-    void OnEnable() {
+    void Awake() {
         MotesList.Motes.Add(this); // Add the mote to the list of motes
         Motes = MotesList.Motes; // Reference to the motes list
+        Canvas = GameObject.Find("Canvas"); // Find the canvas
+        playerMote = GameObject.Find("Player"); // Find the gameobject with the IsPlayer flag set to true
         
         if (IsPlayer) { // if we don't check for a player, every time a new mote is spawned, the camera resets itself and gives you virtual wiplash
             // Check for the virtual camera so we can zoom in/out with it in CinemachineZoom()
@@ -79,7 +81,12 @@ public class MoteScript : MonoBehaviour {
                 Motes = new List<MoteScript>(); // Create the list if it hasn't been created already.
                 Motes.Add(this);    
             }
+            StartCoroutine(SizeChecker());
         }
+    }
+    IEnumerator SizeChecker(){
+        yield return new WaitForSeconds(5f);
+        enableBiggestFinder = true;
     }
 
     void OnDisable() {
@@ -99,39 +106,18 @@ public class MoteScript : MonoBehaviour {
         }
     }
     void Update() {
-        // int numMotes = Motes.Count;
-        // Debug.Log("Number of motes: " + numMotes);
         transform.localScale = new Vector3(moteSize * 0.01f, moteSize * 0.01f, 1f); // Calculates the size of the sprite based on the variable moteSize
-        Canvas = GameObject.Find("Canvas"); // Find the UI canvas
-        playerMote = GameObject.Find("Player"); // Find the gameobject with the IsPlayer flag set to true
-
+        
         if(IsPlayer){
             Player(); // I put the player stuff under Update instead of FixedUpdate because when it was under FixedUpdate, it would spawn a new mote every frame that the mouse was pressed down because its state gets refreshed every frame and thought it was getting pressed each frame instead of held from when it was initally pressed
             TimeScaler();
-            BiggestFinder();
+            if (enableBiggestFinder) {
+                BiggestFinder();
+            }
             CinemachineZoom(); // its all the way down at the bottom. have fun scrolling :)
-        }
-        if (!IsPlayer) {
+        } if (!IsPlayer) {
             Color(); // Change the color based on player size
         }
-    }
-    void BiggestFinder(){
-        playerMoteSize = this.moteSize;
-        playerIsBiggest = Motes.TrueForAll(x => !x.biggerThanPlayer);
-        if (playerIsBiggest) {
-            LvlComplete();
-        }
-        // TrueForAll: https://stackoverflow.com/questions/17897728/how-to-use-trueforall#:~:text=bool%20alltrue%20%3D%20listOfBools.TrueForAll(b%20%3D%3E%20b)%3B
-    } 
-    public void LvlComplete() {
-        Time.timeScale = 1;
-        allowTimeScaler = false;
-        allowMenus = false;
-        if (!uiSpawned) {
-            uiSpawned = true;
-            Instantiate(LvlCompleteUI, Canvas.transform.position, Quaternion.identity, Canvas.transform);
-        }
-        SaveLevel();
     }
     void Player() {
         if(moteSize > (1.5f * moteSpawnSize)) { // Makes sure that the player mote can't get too small
@@ -177,6 +163,27 @@ public class MoteScript : MonoBehaviour {
             PlayerTooSmall();
         }
         // if (this.gameObject.GetComponent<TutorialScript>().isActiveAndEnabled == true) {}
+    }
+    void BiggestFinder(){
+        transform.localScale = new Vector3(moteSize * 0.01f, moteSize * 0.01f, 1f);
+        playerMoteSize = this.moteSize;
+        bool playerIsBiggest = Motes.TrueForAll(x => x.biggerThanPlayer == false);
+        if (playerIsBiggest) {
+            Debug.Log("player is biggest");
+            LevelComplete();
+        }
+        // TrueForAll: https://stackoverflow.com/questions/17897728/how-to-use-trueforall#:~:text=bool%20alltrue%20%3D%20listOfBools.TrueForAll(b%20%3D%3E%20b)%3B
+    }
+    public void LevelComplete() {
+        if ((!uiSpawned)) {
+            Debug.Log("LvlComplete");
+            Time.timeScale = 1;
+            allowTimeScaler = false;
+            allowMenus = false;
+            uiSpawned = true;
+            Instantiate(LvlCompleteUI, Canvas.transform.position, Quaternion.identity, Canvas.transform);
+        }
+        SaveLevel();
     }
     public void MenuOpened() {
         if (allowMenus) {
@@ -266,12 +273,12 @@ public class MoteScript : MonoBehaviour {
             
             // Compare the size of the mote and the player, then change colors accordingly
             if (moteSize >= playerMoteSize) {
-                rend.material.Lerp(bluemat, redmat, 100f);
-                // rend.material = redmat;
+                // rend.material.Lerp(bluemat, redmat, 100f);
+                rend.material = redmat;
                 biggerThanPlayer = true;
             } else if (moteSize < playerMoteSize) {
-                rend.material.Lerp(redmat, bluemat, 100f);
-                // rend.material = bluemat;
+                // rend.material.Lerp(redmat, bluemat, 100f);
+                rend.material = bluemat;
                 biggerThanPlayer = false;
             }
             // note that using Lerp causes everything to break and die, so don't un-comment those unless you wanna try and fix them somehow 
