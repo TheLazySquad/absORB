@@ -123,7 +123,7 @@ public class MoteScript : MonoBehaviour {
         if(moteSize > (1.5f * moteSpawnSize)) { // Makes sure that the player mote can't get too small
             if (Input.GetKeyDown(KeyCode.Escape)) { // Check if the escape key is pressed
                 if (Paused) {
-                    MenuClosed();
+                    MenuClosed(false);
                 } else if (!Paused) {
                     MenuOpened();
                 }
@@ -192,32 +192,35 @@ public class MoteScript : MonoBehaviour {
             Paused = true;
         }
     }
-    public void MenuClosed() {
+    public void MenuClosed(bool goToMenu) { // add in the goToMenu variable because calling the return to menu function seperately in SceneLoader causes it to just do nothing at all. p;robably due to the fact that the object is destroyed before return to the menu is called
         Destroy(GameObject.FindGameObjectWithTag("PauseMenu"));
-        Time.timeScale = gameSpeedTime;
-        Paused = false;
+        Time.timeScale = gameSpeedTime; // set the time back to how it was before the pause menu was opened
+        Paused = false; // pause boolean
+        if (goToMenu) { // that variable we added because of the loading problem
+            SceneManager.LoadScene(0); // the main menu in my game is denoted by id 0. I could also load it by name with SceneManager.LoadScene("MainMenu");
+        }
     }
-    void PlayerTooSmall() {
+    void PlayerTooSmall() { // called when the player clicks too many times and runs out of mass
         if (allowMenus) {
             playerMote.SetActive(false);
             if (!uiSpawned) {
-                uiSpawned = true;
-                Instantiate(PlayerTooSmallUI, Canvas.transform.position, Quaternion.identity, Canvas.transform);
+                uiSpawned = true; // set the boolean to true so that the UI doesn't duplicate itself
+                Instantiate(PlayerTooSmallUI, Canvas.transform.position, Quaternion.identity, Canvas.transform); // spawn the PlayerTooSmallUI
             }
         }
     }
-    void PlayerMoteAbsorbed() {
+    void PlayerMoteAbsorbed() { // called if the player runs into a larger mote
         if (allowMenus) {
             if (!uiSpawned) {
-                uiSpawned = true;
-                Instantiate(PlayerAbsorbedUI, Canvas.transform.position, transform.rotation, Canvas.transform);
+                uiSpawned = true; // prevent the UI from duping itself
+                Instantiate(PlayerAbsorbedUI, Canvas.transform.position, transform.rotation, Canvas.transform); // spawn the PlayerAbsorbedUI
             }
         }
     }
     void OutOfBounds() { // Defines what will happen when the mote is past a certain distance (xBoundary & yBoundary) in each direction.
-        if (-xBoundary > rb.transform.position.x) {
-            rb.AddForce(Vector2.right*OOBForce);
-            rb.drag = OOBDrag;
+        if (-xBoundary > rb.transform.position.x) { // if the mote's coordinates are larger than the boundary variables
+            rb.AddForce(Vector2.right*OOBForce); // add force back twords the middle of the level
+            rb.drag = OOBDrag; // add a drag to the mote so that it dosen't start accelerating
         } else if (xBoundary < rb.transform.position.x) {
             rb.AddForce(Vector2.left*OOBForce);
             rb.drag = OOBDrag;
@@ -243,26 +246,22 @@ public class MoteScript : MonoBehaviour {
             if (otherMote.name == playerMote.name) { // If the other mote is not the player mote
                 moteSize += otherMote.moteSize;
                 Destroy(otherMote.gameObject);
-                PlayerMoteAbsorbed();
+                PlayerMoteAbsorbed(); // absorb the player mote. its different from absorbing other motes cause the level has to end when the player had been absorbed
             } else if (otherMote.name != playerMote.name) { // If the other mote is the player mote
                 moteSize += otherMote.moteSize;
                 Destroy(otherMote.gameObject);
             }
-        } else if (moteSize == otherMote.moteSize){
-            if (otherMote.moteSize == moteSize) {
-                if (otherMote.name == playerMote.name) {
-                    PlayerMoteAbsorbed();
-                }
-                Destroy(gameObject);
+        } else if (moteSize == otherMote.moteSize){ // handles collisions where both motes are the same size
+            if (otherMote.name == playerMote.name) {
+                PlayerMoteAbsorbed();
             }
+            Destroy(gameObject);
         }
-        
     }
-    // Gets the size of the other mote and calls in Absorb() when two motes collide
-    void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.gameObject.CompareTag("absorbable")) {
-            MoteScript otherMote = collision.gameObject.GetComponent<MoteScript>();
-            Absorb(otherMote);
+    void OnCollisionEnter2D(Collision2D collision) { // Gets the size of the other mote and calls in Absorb() when two motes collide
+        if (collision.gameObject.CompareTag("absorbable")) { // compare the tags. later versions of the game have different types of motes
+            MoteScript otherMote = collision.gameObject.GetComponent<MoteScript>(); // Get the other mote's script, which holds all the information about the other mote
+            Absorb(otherMote); // call Absorb()
         }
     }
     void Color() { // Compare the moteSize of this gameobject to that of the player's mote
@@ -282,6 +281,8 @@ public class MoteScript : MonoBehaviour {
                 biggerThanPlayer = false;
             }
             // note that using Lerp causes everything to break and die, so don't un-comment those unless you wanna try and fix them somehow 
+                // thanks past self :)
+
         } else {
             rend.material = redmat;
         }
@@ -313,7 +314,7 @@ public class MoteScript : MonoBehaviour {
             }
         }
     }
-    void SaveLevel() {
+    void SaveLevel() { // save the level's completion state to a persistent data file. 
         int currentLevelInt = int.Parse(SceneManager.GetActiveScene().name); // turn the string into an int so we can use it in the next line
 
         if (currentLevelInt == 1) {LevelSaver.lvl1 = true;}
