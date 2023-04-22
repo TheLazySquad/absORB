@@ -196,13 +196,13 @@ public class MoteScript : MonoBehaviour {
         if (allowTimeScaler) {
             float currentMousePositionY = Input.mousePosition.y; // set the y position variable to the current y position of the mouse
             if (currentMousePositionY > prevMousePosY) { // if the current y position is greater than the one from the previous frame
-                if (Time.timeScale < 20f) { // clamp the time scale at a maximum of 20
+                if (Time.timeScale < 10f) { // clamp the time scale at a maximum of 10
                     Time.timeScale += 0.1f; // increase the time scale by .1 every frame
-                } else {Time.timeScale = 20f;} // if the time scale is greater than 10, set it back to 10 so that it can't be too high
+                } else if (Time.timeScale > 10f) {Time.timeScale = 10f;} // if the time scale is greater than 10, set it back to 10 so that it can't be too high
             } else if (currentMousePositionY < prevMousePosY) { // if the current y position is less than the one from the previous frame
                 if (Time.timeScale > 0.2f) { // clamp the time scale at a minimum of 0.2
                     Time.timeScale -= 0.1f; // decrease the time scale by .1 every frame
-                } else {Time.timeScale = 0.2f;} // if the time scale is less than 0.2 then set it back to 0.2 so that it can't get too small
+                } else if (Time.timeScale < 0.2f) {Time.timeScale = 0.2f;} // if the time scale is less than 0.2 then set it back to 0.2 so that it can't get too small
             }
             prevMousePosY = currentMousePositionY; // set the previous mouse position to the current mouse position so that the function will function properly next frame
             
@@ -295,16 +295,16 @@ public class MoteScript : MonoBehaviour {
     }
     void OutOfBounds() { // Defines what will happen when the mote is past a certain distance (xBoundary & yBoundary) in each direction.
         if (-xBoundary > rb.transform.position.x) { // if the mote's coordinates are larger than the boundary variables
-            rb.AddForce(Vector2.right*OOBForce); // add force back twords the middle of the level
+            rb.AddForce(Vector2.right*(OOBForce)/moteSize); // add force back twords the middle of the level
             rb.drag = OOBDrag; // add a drag to the mote so that it dosen't start accelerating
         } else if (xBoundary < rb.transform.position.x) {
-            rb.AddForce(Vector2.left*OOBForce);
+            rb.AddForce(Vector2.left*(OOBForce)/moteSize);
             rb.drag = OOBDrag;
         } else if (-yBoundary > rb.transform.position.y) {
-            rb.AddForce(Vector2.up*OOBForce);
+            rb.AddForce(Vector2.up*(OOBForce)/moteSize);
             rb.drag = OOBDrag;
         } else if (yBoundary < rb.transform.position.y) {
-            rb.AddForce(Vector2.down*OOBForce);
+            rb.AddForce(Vector2.down*(OOBForce)/moteSize);
             rb.drag = OOBDrag;
         } else {
             rb.drag = 0.00f; // Universal drag constant. All motes will always feel this drag on their rigidbody while inside the defined boundaries. I don't want to set it to a variable because there is no reason it should ever not be 0 unless I want to change how the entire game feels
