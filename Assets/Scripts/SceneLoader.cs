@@ -19,6 +19,7 @@ public class SceneLoader : MonoBehaviour {
         }
     }
     public void LoadMenu(){
+        Time.timeScale = 1;
         GameObject playerMote = GameObject.Find("Player");
         playerMote.GetComponent<MoteScript>().MenuClosed(true);
     }
@@ -28,8 +29,8 @@ public class SceneLoader : MonoBehaviour {
         StartCoroutine(LoadLevel(sceneName));
     } 
     IEnumerator LoadLevel(string sceneName) {
-        transitionAnimator.SetTrigger("StartTransition");
-        yield return new WaitForSeconds(2);
+        transitionAnimator.SetTrigger("fadeIn"); // fade in and out are backwards from what you think they should be because we are fading in a black screen, not fading out all the objects
+        yield return new WaitForSecondsRealtime(2);
         SceneManager.LoadScene(sceneName);
     }
 }

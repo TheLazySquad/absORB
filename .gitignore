@@ -46,6 +46,7 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+/ignore.conf
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -72,9 +73,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Text Mesh Pro Shaders
-[Aa]ssets/TextMeshPro/Shaders/
+/[Aa]ssets/TextMeshPro/Shaders/
 
 # Plastic 
-.plastic/*
-plastic.wktree
-plastic.changes
+/.plastic/*
+/plastic.wktree
+/plastic.changes

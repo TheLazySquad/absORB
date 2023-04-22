@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 
 public class LevelSaver : MonoBehaviour {
-    public bool lvl0; // tutorial level
+    public static bool lvl0; // tutorial level
     
     //red levels
     public static bool lvl1; public static bool lvl2; public static bool lvl3; public static bool lvl4; public static bool lvl5; public static bool lvl6; public static bool lvl7; public static bool lvl8; public static bool lvl9; public static bool lvl10; public static bool lvl11; public static bool lvl12;

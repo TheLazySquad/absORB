@@ -18,6 +18,7 @@ public class UIScript : MonoBehaviour {
         playerMoteScript.MenuClosed(true);
     }
     public void UIReloadScene() {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // using GetActiveScene instead of just using the name of the scene is nice because i made all of the levels their own scene. https://docs.unity3d.com/ScriptReference/SceneManagement.SceneManager.GetActiveScene.        
     }
 }
