@@ -19,7 +19,7 @@ public class MoteScript : MonoBehaviour {
     private Vector2 gravityForce; // used also in InitVelocity()
 
     // Variables for OutOfBounds()
-    private float OOBDrag = 0.001f; // The value of the drag force applied by the rigidbody when the mote is outside the set boundaries defined below
+    private float OOBDrag = 0.005f; // The value of the drag force applied by the rigidbody when the mote is outside the set boundaries defined below
     private float OOBForce = 0.3f; // The amount of force applied to the rigidbody when the mote is outside the set boundaries defined below
     private float xBoundary = 20; private float yBoundary = 20; // The coordinates used in OutOfBounds()
     
@@ -30,6 +30,12 @@ public class MoteScript : MonoBehaviour {
     private float moteSpawnForce = 0.02f; // The amount of force to apply to the cloned mote
     private float playerLaunchForce = 1.2f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
     private float holdTime;
+
+    // Sound variables
+    public AudioClip CollisionSound;
+    public AudioClip LVLCompleteSound;
+    public AudioSource CollisionSFX;
+    public AudioSource LVLCompleteSFX;
 
     // Pause and Time
     private bool Paused = false;
@@ -50,7 +56,7 @@ public class MoteScript : MonoBehaviour {
     public GameObject playerMote; // gets the player mote for Color()
     private float playerMoteSize; // the variable for the size of the player gameobject for Color()
 
-    // Variables for CinemachineZoom()
+    // Variables for CinemachineZoom() on Windows
     private bool allowZoom = true;
     private float sizeChangeAmount = 0.5f; // The amount to change the camera's size by
     private float zoomSpeed = 2f; // The speed at which to zoom in/out
@@ -90,10 +96,20 @@ public class MoteScript : MonoBehaviour {
                 Motes.Add(this); // add this mote to the list
             }
             StartCoroutine(WaitForSizeLoad()); // coroutine below
-
+            // StartCoroutine(AllowSounds());
             TutorialChecker();
         }
     }
+    void StartSounds() {
+        CollisionSFX = gameObject.AddComponent<AudioSource>();
+        CollisionSFX.clip = CollisionSound;
+        LVLCompleteSFX = gameObject.AddComponent<AudioSource>();
+        LVLCompleteSFX.clip = LVLCompleteSound;
+    }
+    // IEnumerator AllowSounds() {
+    //     yield return new WaitForSecondsRealtime(2);
+    //     allowCollisonSound = true;
+    // }
     IEnumerator InitVelocity() {
         yield return new WaitForSecondsRealtime(1); // wait for a second
         rb.AddForce(transform.up * VUp, ForceMode2D.Impulse); // force applied up
@@ -240,6 +256,7 @@ public class MoteScript : MonoBehaviour {
             allowTimeScaler = false;
             allowMenus = false;
             uiSpawned = true;
+            LVLCompleteSFX.Play();
             Instantiate(LvlCompleteUI, Canvas.transform.position, Quaternion.identity, Canvas.transform);
         }
         SaveLevel();
@@ -303,11 +320,11 @@ public class MoteScript : MonoBehaviour {
 
     void Absorb(MoteScript otherMote) { // The Absorb function basically eats the smaller object when they collide
         if (moteSize > otherMote.moteSize) { // Absorb the other mote if this mote is bigger
-            if (otherMote.name == playerMote.name) { // If the other mote is not the player mote
+            if (otherMote.name == playerMote.name) { // If the other mote is the player mote
                 moteSize += otherMote.moteSize;
                 Destroy(otherMote.gameObject);
                 PlayerMoteAbsorbed(); // absorb the player mote. its different from absorbing other motes cause the level has to end when the player had been absorbed
-            } else if (otherMote.name != playerMote.name) { // If the other mote is the player mote
+            } else if (otherMote.name != playerMote.name) { // If the other mote is not the player mote
                 moteSize += otherMote.moteSize;
                 Destroy(otherMote.gameObject);
             }
@@ -320,6 +337,7 @@ public class MoteScript : MonoBehaviour {
     }
     void OnCollisionEnter2D(Collision2D collision) { // Gets the size of the other mote and calls in Absorb() when two motes collide
         if (collision.gameObject.CompareTag("absorbable")) { // compare the tags. later versions of the game have different types of motes
+            CollisionSFX.Play();
             MoteScript otherMote = collision.gameObject.GetComponent<MoteScript>(); // Get the other mote's script, which holds all the information about the other mote
             Absorb(otherMote); // call Absorb()
         }
@@ -381,7 +399,7 @@ public class MoteScript : MonoBehaviour {
     void CinemachineZoom() {
         if (!Paused && allowZoom) {
             Vector2 scrollDelta = Input.mouseScrollDelta; // make it a variable for ease of access
-            if (scrollDelta.y != 0) { // its you're scrolling
+            if (scrollDelta.y != 0) { // if you're scrolling
                 targetSize -= sizeChangeAmount * scrollDelta.y; // change the size variable based on the scroll delta vector
                 targetSize = Mathf.Clamp(targetSize, 0.5f, 45f); // Clamp the target size to a reasonable range
             }
