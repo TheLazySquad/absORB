@@ -8,14 +8,19 @@ public class SceneLoader : MonoBehaviour {
     private GameObject playerMote;
     public void NextLevel() {
         Time.timeScale = 1;
-        int currentLevelInt = int.Parse(SceneManager.GetActiveScene().name);
-        int newLevelInt = currentLevelInt + 1;
-        if (newLevelInt == 13 || newLevelInt == 25){
-            LoadMenu(); Debug.Log("Loading main menu");
-        } else {
-            string newLevelStr = System.Convert.ToString(newLevelInt);
-            LoadScene(newLevelStr);
-            Debug.Log("Loading level " + newLevelStr);
+        string currentLvlStr = SceneManager.GetActiveScene().name;
+        if (currentLvlStr == "Tutorial") {
+            LoadScene("MainMenu");
+        }else {
+            int currentLevelInt = int.Parse(SceneManager.GetActiveScene().name);
+            int newLevelInt = currentLevelInt + 1;
+            if (newLevelInt == 13 || newLevelInt == 25){
+                LoadMenu(); Debug.Log("Loading main menu");
+            } else {
+                string newLevelStr = System.Convert.ToString(newLevelInt);
+                LoadScene(newLevelStr);
+                Debug.Log("Loading level " + newLevelStr);
+            }
         }
     }
     public void LoadMenu(){

@@ -20,7 +20,7 @@ public class MoteScript : MonoBehaviour {
 
     // Variables for OutOfBounds()
     private float OOBDrag = 0.005f; // The value of the drag force applied by the rigidbody when the mote is outside the set boundaries defined below
-    private float OOBForce = 0.3f; // The amount of force applied to the rigidbody when the mote is outside the set boundaries defined below
+    private float OOBForce = 0.01f; // The amount of force applied to the rigidbody when the mote is outside the set boundaries defined below
     private float xBoundary = 20; private float yBoundary = 20; // The coordinates used in OutOfBounds()
     
     // Player mote specific variables
