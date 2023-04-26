@@ -31,17 +31,12 @@ public class LevelSaver : MonoBehaviour {
     }
 
     // Wrapper class for serializing and deserializing a list of bools
-    [System.Serializable]
-    private class ListWrapper
-    {
+    public class ListWrapper {
         public List<bool> lvlList;
-
-        public ListWrapper(List<bool> lvlList)
-        {
-            this.lvlList = lvlList;
-        }
+        public ListWrapper(List<bool> lvlList) {this.lvlList = lvlList;}
     }
-    private void UpdateFileList() {
+
+    private void UpdateFileList() { // set the boolen values to the values of the level list
         lvl0 = levelList[0];
         lvl1 = levelList[1];
         lvl2 = levelList[2];
@@ -68,7 +63,7 @@ public class LevelSaver : MonoBehaviour {
         lvl23 = levelList[23];
         lvl24 = levelList[24]; 
     }
-    private void UpdateLevelList() {
+    private void UpdateLevelList() { // set the list values to the boolean values
         levelList[0] = lvl0;
         levelList[1] = lvl1;
         levelList[2] = lvl2;

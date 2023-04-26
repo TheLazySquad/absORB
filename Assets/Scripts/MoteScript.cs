@@ -29,12 +29,12 @@ public class MoteScript : MonoBehaviour {
     private float moteSpawnSize = 0.2f; // The size to set the cloned mote to
     private float moteSpawnForce = 0.02f; // The amount of force to apply to the cloned mote
     private float playerLaunchForce = 1.2f; // Originally I was using the moteSpawnForce to push the player mote away with the same force - like how equal and opposite reactions work in real life - but that didn't give me the effect I was looking for
-    private float holdTime;
+    private float holdTime; // the time the left mouse button it held down
 
     // Sound variables
-    public AudioClip CollisionSound;
+    public AudioClip CollisionSound; // clips hold the sound
     public AudioClip LVLCompleteSound;
-    public AudioSource CollisionSFX;
+    public AudioSource CollisionSFX; // sources play the sound
     public AudioSource LVLCompleteSFX;
 
     // Pause and Time
@@ -100,7 +100,7 @@ public class MoteScript : MonoBehaviour {
             TutorialChecker();
         }
     }
-    void StartSounds() {
+    void StartSounds() { // get the sound components
         CollisionSFX = gameObject.AddComponent<AudioSource>();
         CollisionSFX.clip = CollisionSound;
         LVLCompleteSFX = gameObject.AddComponent<AudioSource>();
@@ -160,28 +160,28 @@ public class MoteScript : MonoBehaviour {
             Color(); // Change the color based on player size
         }
     }
-    void Player() {
+    void Player() { // player specific stuff
         if(moteSize > (1.5f * moteSpawnSize)) { // Makes sure that the player mote can't get too small
             if (Input.GetKeyDown(KeyCode.Escape)) { // Check if the escape key is pressed
                 if (Paused) {
-                    MenuClosed(false);
+                    MenuClosed(false); // if the game is paused and you press escape, close the pause menu but don't load the main menu
                 } else if (!Paused) {
-                    MenuOpened();
+                    MenuOpened(); // if the game is not paused and you press escape, open the pause menu
                 }
             }
             if(!Paused){
-                if (Input.GetMouseButton(0)) {
-                    holdTime += Time.deltaTime;
+                if (Input.GetMouseButton(0)) { // If you click the mouse button
+                    holdTime += Time.deltaTime; // start a timer to see how long the mouse is being held down
                 }
-                if (Input.GetMouseButtonDown(0)) {
+                if (Input.GetMouseButtonDown(0)) { // if the mouse button is down, store the position of the mouse
                     storedMousePos = Input.mousePosition;
                 }
-                if (holdTime < 0.5f) {
+                if (holdTime < 0.5f) { // if the mouse is held down for less than half a second, call MoteDispenser()
                     if (Input.GetMouseButtonUp(0)) {
                         MoteDispenser();
-                        holdTime = 0.0f;
+                        holdTime = 0.0f; // reset timer
                     }
-                } else { 
+                } else { // if the mouse is held down for more than half a second, scale the time based on the mouse's position
                     TimeScaler();
                     if (Input.GetMouseButtonUp(0)) {
                         holdTime = 0.0f;
@@ -216,9 +216,9 @@ public class MoteScript : MonoBehaviour {
     void MoteDispenser() {
         // Rotates the player mote such that its x axis is always facing the mouse
         Vector3 mousePos = Input.mousePosition;
-        Vector3 objectPos = Camera.main.WorldToScreenPoint (transform.position);
-        mousePos.x = mousePos.x - objectPos.x;
-        mousePos.y = mousePos.y - objectPos.y;
+        Vector3 playerPos = Camera.main.WorldToScreenPoint (transform.position);
+        mousePos.x = mousePos.x - playerPos.x;
+        mousePos.y = mousePos.y - playerPos.y;
         float angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
         // I figured out how to rotate the gameobject twords the mouse from the following link: https://answers.unity.com/questions/10615/rotate-objectweapon-towards-mouse-cursor-2d.html
@@ -226,7 +226,7 @@ public class MoteScript : MonoBehaviour {
         // Spawns a new mote and sets the size
         Vector3 spawnPosition = transform.position + (transform.right * ((moteSize*0.1f)+moteSpawnDistance));
         GameObject newMote = Instantiate(motePrefab, spawnPosition, Quaternion.identity); // Spawns the new mote with the spawnPosition
-        MoteScript moteScript = newMote.GetComponent<MoteScript>(); // Gets the script componenet of the gameobject
+        MoteScript moteScript = newMote.GetComponent<MoteScript>(); // Gets the script componenet of the new gameobject
         moteScript.moteSize = moteSpawnSize; // Sets the moteSize float of that script to the moteSpawnSize float from this script
 
         // Apply force to the new mote
@@ -251,21 +251,21 @@ public class MoteScript : MonoBehaviour {
         // TrueForAll: https://stackoverflow.com/questions/17897728/how-to-use-trueforall#:~:text=bool%20alltrue%20%3D%20listOfBools.TrueForAll(b%20%3D%3E%20b)%3B
     }
     public void LevelComplete() {
-        if ((!uiSpawned)) {
-            Time.timeScale = 1;
-            allowTimeScaler = false;
-            allowMenus = false;
+        if ((!uiSpawned)) { // if the UI hasn't already been spawned
+            Time.timeScale = 1; // set the time scale to 1 so the scene transitions work right
+            allowTimeScaler = false; // turn off time scaling
+            allowMenus = false; // disallow menus
             uiSpawned = true;
-            LVLCompleteSFX.Play();
-            Instantiate(LvlCompleteUI, Canvas.transform.position, Quaternion.identity, Canvas.transform);
+            LVLCompleteSFX.Play(); // play a cool sound effect
+            Instantiate(LvlCompleteUI, Canvas.transform.position, Quaternion.identity, Canvas.transform); // spawn the lavel completed UI
         }
         SaveLevel();
     }
-    public void MenuOpened() {
-        if (allowMenus) {
-            Instantiate(pauseMenu, Canvas.transform.position, Quaternion.identity, Canvas.transform);
-            Time.timeScale = 0f; 
-            Paused = true;
+    public void MenuOpened() { // callable function for opening the menu
+        if (allowMenus) { // if the menu is allowed to be opened right now
+            Instantiate(pauseMenu, Canvas.transform.position, Quaternion.identity, Canvas.transform); // instantiate the menu prefab
+            Time.timeScale = 0f; // stop time
+            Paused = true; // boolean for paused state
         }
     }
     public void MenuClosed(bool goToMenu) { // add in the goToMenu variable because calling the return to menu function seperately in SceneLoader causes it to just do nothing at all. p;robably due to the fact that the object is destroyed before return to the menu is called
@@ -321,30 +321,30 @@ public class MoteScript : MonoBehaviour {
     void Absorb(MoteScript otherMote) { // The Absorb function basically eats the smaller object when they collide
         if (moteSize > otherMote.moteSize) { // Absorb the other mote if this mote is bigger
             if (otherMote.name == playerMote.name) { // If the other mote is the player mote
-                moteSize += otherMote.moteSize;
-                Destroy(otherMote.gameObject);
-                PlayerMoteAbsorbed(); // absorb the player mote. its different from absorbing other motes cause the level has to end when the player had been absorbed
-            } else if (otherMote.name != playerMote.name) { // If the other mote is not the player mote
-                moteSize += otherMote.moteSize;
-                Destroy(otherMote.gameObject);
+                moteSize += otherMote.moteSize; // grow
+                Destroy(otherMote.gameObject); // destroy the other mote
+                PlayerMoteAbsorbed(); // run this function instead of breaking everything (destroying the player object when lots of functions use the player object results in lots of errors as you could probably imagine)
+            } else if (otherMote.name != playerMote.name) { // If the other mote is not the player mote, grow and then destroy the other mote
+                moteSize += otherMote.moteSize; // grow
+                Destroy(otherMote.gameObject); // destroy the other mote
             }
         } else if (moteSize == otherMote.moteSize){ // handles collisions where both motes are the same size
-            if (otherMote.name == playerMote.name) {
-                PlayerMoteAbsorbed();
+            if (otherMote.name == playerMote.name) { // if you're absorbing the player
+                PlayerMoteAbsorbed(); 
             }
             Destroy(gameObject);
         }
     }
     void OnCollisionEnter2D(Collision2D collision) { // Gets the size of the other mote and calls in Absorb() when two motes collide
         if (collision.gameObject.CompareTag("absorbable")) { // compare the tags. later versions of the game have different types of motes
-            CollisionSFX.Play();
+            CollisionSFX.Play(); // play the cool sound effect I got from https://opengameart.org for free.
             MoteScript otherMote = collision.gameObject.GetComponent<MoteScript>(); // Get the other mote's script, which holds all the information about the other mote
             Absorb(otherMote); // call Absorb()
         }
     }
     void Color() { // Compare the moteSize of this gameobject to that of the player's mote
         rend = GetComponent<Renderer>(); // get the renderer component for Color()
-        if (playerMote != null) {
+        if (playerMote != null) { // if player isnt null
             MoteScript playerMoteScript = playerMote.GetComponent<MoteScript>(); // Get the MoteScript component from the player's mote gameobject
             playerMoteSize = playerMoteScript.moteSize; // Get the size of the player's mote
             
@@ -358,16 +358,16 @@ public class MoteScript : MonoBehaviour {
                 rend.material = bluemat;
                 biggerThanPlayer = false;
             }
-            // note that using Lerp causes everything to break and die, so don't un-comment those unless you wanna try and fix them somehow 
+            // note that using Lerp causes everything to break and die, so don't un-comment those unless you appreciate graphics errors 
                 // thanks past self :)
 
-        } else {rend.material = redmat;}
+        } else {Debug.Log("a mote is confused as to its size relative to the player"); rend.material = redmat;} // if your comparitive size is neither larger, smaller, or equal to that of the player, stay confused but also be red
     }
 
     void SaveLevel() { // save the level's completion state to a persistent data file. 
         if (SceneManager.GetActiveScene().name != "Tutorial") {
             int currentLevelInt = int.Parse(SceneManager.GetActiveScene().name); // turn the string into an int so we can use it in the next line
-
+            // It doesn't work when iterating through a list. Trust me, I will jump on the opertunity to not have to type out every single leve once I figure out how exactly I can do that without breaking the feature entirely.
             if (currentLevelInt == 1) {LevelSaver.lvl1 = true;}
             if (currentLevelInt == 2) {LevelSaver.lvl2 = true;}
             if (currentLevelInt == 3) {LevelSaver.lvl3 = true;}
@@ -393,7 +393,7 @@ public class MoteScript : MonoBehaviour {
             if (currentLevelInt == 23) {LevelSaver.lvl23 = true;}
             if (currentLevelInt == 24) {LevelSaver.lvl24 = true;}
         } else {
-            LevelSaver.lvl0 = true;
+            LevelSaver.lvl0 = true; // tutorial is level 0
         }
     }
     void CinemachineZoom() {
@@ -403,8 +403,8 @@ public class MoteScript : MonoBehaviour {
                 targetSize -= sizeChangeAmount * scrollDelta.y; // change the size variable based on the scroll delta vector
                 targetSize = Mathf.Clamp(targetSize, 0.5f, 45f); // Clamp the target size to a reasonable range
             }
-            virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(virtualCamera.m_Lens.OrthographicSize, targetSize, zoomSpeed * Time.deltaTime); // finally lerp the size of the virtual camera (the one controlling the main camera) based on the target size and the zoom speed
-            // this was a very difficult solution to find, but it was crucial that the camera wasn't super jumpy, so here's where i found how to change the Cinemachine's virtual camera size: https://docs.unity3d.com/Packages/com.unity.cinemachine@2.3/api/Cinemachine.LensSettings.html#:~:text=System.Single-,OrthographicSize,-When%20using%20an. it really would have been nice to know that is was so simple to begin with.
+            virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(virtualCamera.m_Lens.OrthographicSize, targetSize, zoomSpeed * Time.timeScale); // last but not least, lerp the size of the virtual camera (the one controlling the main camera) based on the target size, zoom speed, and time scale, since the time scale is chaning a lot in this game.
+            // since we're using Cinemachine to track the player normally, I had to figure out how to change the Cinemachine's virtual camera size, which I ended up getting from here: https://docs.unity3d.com/Packages/com.unity.cinemachine@2.3/api/Cinemachine.LensSettings.html#:~:text=System.Single-,OrthographicSize,-When%20using%20an. it really would have been nice to know that is was so simple to begin with.
         }
     }
 }
