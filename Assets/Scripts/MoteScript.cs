@@ -244,7 +244,7 @@ public class MoteScript : MonoBehaviour {
     void BiggestFinder(){
         transform.localScale = new Vector3(moteSize * 0.01f, moteSize * 0.01f, 1f);
         playerMoteSize = this.moteSize;
-        bool playerIsBiggest = Motes.TrueForAll(x => x.biggerThanPlayer == false);
+        bool playerIsBiggest = Motes.TrueForAll(x => x.biggerThanPlayer == false); // playerIsBiggest is true if the value of biggerThanPlayer is false for all objects in the list
         if (playerIsBiggest) {
             LevelComplete();
         }
@@ -268,7 +268,7 @@ public class MoteScript : MonoBehaviour {
             Paused = true; // boolean for paused state
         }
     }
-    public void MenuClosed(bool goToMenu) { // add in the goToMenu variable because calling the return to menu function seperately in SceneLoader causes it to just do nothing at all. p;robably due to the fact that the object is destroyed before return to the menu is called
+    public void MenuClosed(bool goToMenu) { // add in the goToMenu variable because calling the return to menu function seperately in SceneLoader causes it to just do nothing at all. probably due to the fact that the object is destroyed before return to the menu is called
         Destroy(GameObject.FindGameObjectWithTag("PauseMenu"));
         Time.timeScale = gameSpeedTime; // set the time back to how it was before the pause menu was opened
         Paused = false; // pause boolean
@@ -403,7 +403,7 @@ public class MoteScript : MonoBehaviour {
                 targetSize -= sizeChangeAmount * scrollDelta.y; // change the size variable based on the scroll delta vector
                 targetSize = Mathf.Clamp(targetSize, 0.5f, 45f); // Clamp the target size to a reasonable range
             }
-            virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(virtualCamera.m_Lens.OrthographicSize, targetSize, zoomSpeed * Time.timeScale); // last but not least, lerp the size of the virtual camera (the one controlling the main camera) based on the target size, zoom speed, and time scale, since the time scale is chaning a lot in this game.
+            virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(virtualCamera.m_Lens.OrthographicSize, targetSize, zoomSpeed * Time.deltaTime); // last but not least, lerp the size of the virtual camera (the one controlling the main camera) based on the target size, zoom speed, and time scale, since the time scale is chaning a lot in this game.
             // since we're using Cinemachine to track the player normally, I had to figure out how to change the Cinemachine's virtual camera size, which I ended up getting from here: https://docs.unity3d.com/Packages/com.unity.cinemachine@2.3/api/Cinemachine.LensSettings.html#:~:text=System.Single-,OrthographicSize,-When%20using%20an. it really would have been nice to know that is was so simple to begin with.
         }
     }

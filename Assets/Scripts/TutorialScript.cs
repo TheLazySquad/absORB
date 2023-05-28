@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TutorialScript : MonoBehaviour {
 
@@ -25,6 +26,7 @@ public class TutorialScript : MonoBehaviour {
     
     // Animator
     public Animator transitionAnimator;
+    
     // Other
     private float prevMousePosY;
     private float holdTime;
@@ -32,13 +34,13 @@ public class TutorialScript : MonoBehaviour {
     void Start() {
         Mote1.SetActive(false);
         Mote2.SetActive(false);
-        FadeOut(TXT_ClickToMove);
-        FadeOut(TXT_ScrollToZoom);
-        FadeOut(TXT_DragScaleTime);
-        FadeOut(TXT_AbsorbTheMote1);
-        FadeOut(TXT_AbsorbTheMote2);
-        FadeOut(TXT_AbsorbTheMote3);
-        FadeOut(TXT_AbsorbTheMote4);
+        FastOut(TXT_ClickToMove);
+        FastOut(TXT_ScrollToZoom);
+        FastOut(TXT_DragScaleTime);
+        FastOut(TXT_AbsorbTheMote1);
+        FastOut(TXT_AbsorbTheMote2);
+        FastOut(TXT_AbsorbTheMote3);
+        FastOut(TXT_AbsorbTheMote4);
         StartCoroutine(StartText());
     }
     IEnumerator StartText() {
@@ -46,6 +48,10 @@ public class TutorialScript : MonoBehaviour {
         FadeIn(TXT_ClickToMove);
     }
     void Update() {
+        Progresses();
+        InputTypes();
+    }
+    void Progresses() {
         if (freezePlayer) {
             this.transform.position = new Vector2(0, 0);
         }
@@ -75,6 +81,21 @@ public class TutorialScript : MonoBehaviour {
             }
         }
     }
+    void InputTypes() {
+        if (Application.platform == RuntimePlatform.Android) {
+        // This code will be executed on Android.
+        SetText(TXT_ClickToMove, "Tap to move");
+        SetText(TXT_DragScaleTime, "Drag up and down to scale time");
+        SetText(TXT_ScrollToZoom, "Pinch to zoom in and out");
+        }
+        else if (Application.platform == RuntimePlatform.WindowsPlayer) {
+        // This code will be executed on Windows.
+        SetText(TXT_ClickToMove, "Click to move");
+        SetText(TXT_DragScaleTime, "Drag the mouse up and down to scale time");
+        SetText(TXT_ScrollToZoom, "Scroll to zoom in and out");
+        }
+    }
+
     // Coroutines
     IEnumerator ClickedToMove() {
         yield return new WaitForSecondsRealtime(1);
@@ -118,7 +139,10 @@ public class TutorialScript : MonoBehaviour {
         yield return new WaitForSecondsRealtime(2);
         tutorialCompleted = true;
     }
-
+    void SetText(GameObject target, string text) {
+        Text textcomp = target.GetComponent<Text>();
+        textcomp.text = text;
+    }
     // Fade in/out
     void FadeIn(GameObject gObj) {
         transitionAnimator = gObj.GetComponent<Animator>();
@@ -127,5 +151,9 @@ public class TutorialScript : MonoBehaviour {
     void FadeOut(GameObject gObj) {
         transitionAnimator = gObj.GetComponent<Animator>();
         transitionAnimator.SetTrigger("fadeOut");
+    }
+    void FastOut(GameObject gObj) {
+        CanvasGroup cgroup = gObj.GetComponent<CanvasGroup>();
+        cgroup.alpha = 0;
     }
 }
